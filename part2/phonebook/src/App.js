@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
+import personsService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newSearch, setNewSearch] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
@@ -51,6 +53,7 @@ const App = () => {
       .then(returnedPerson => {
         const person = returnedPerson
         setPersons(persons.concat(person))
+        setNotificationMessage(`Added ${person.name}`)
       })
     clearForm()
   }
@@ -72,6 +75,7 @@ const App = () => {
             .update(changedPerson)
             .then(() => {
               handlePersonsUpdate()
+              setNotificationMessage(`Updated ${changedPerson.name} with new number ${changedPerson.number}`)
             })
             .catch(error => {
               alert(`the person '${id}' was already deleted from server`)
@@ -111,6 +115,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notificationMessage} />
       <h2>Phonebook</h2>
       <Filter newSearch={newSearch} handleSearchChange={handleSearchChange} />
       <h2>Add a new</h2>
