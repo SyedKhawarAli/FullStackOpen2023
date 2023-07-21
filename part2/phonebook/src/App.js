@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import personsService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
-import Persons from './components/Persons'
+import Person from './components/Person'
 import Notification from './components/Notification'
 
 const App = () => {
@@ -11,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [isDestructive, setIsDestructive] = useState(false)
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
@@ -53,9 +54,26 @@ const App = () => {
       .then(returnedPerson => {
         const person = returnedPerson
         setPersons(persons.concat(person))
+        setIsDestructive(false)
         setNotificationMessage(`Added ${person.name}`)
       })
     clearForm()
+  }
+
+  const handleDeletePerson = (person) => {
+    if (window.confirm("Delete this person?")) {
+      personsService
+        .deletePerson(person.id)
+        .then(() => {
+          setIsDestructive(true)
+          setNotificationMessage(`Deleted ${person.name} `)
+          handlePersonsUpdate()
+        })
+        .catch(error => {
+          alert(`the person '${person.name}' was already deleted from server`)
+          handlePersonsUpdate()
+        })
+    }
   }
 
   const clearForm = () => {
@@ -75,12 +93,18 @@ const App = () => {
             .update(changedPerson)
             .then(() => {
               handlePersonsUpdate()
+              setIsDestructive(false)
               setNotificationMessage(`Updated ${changedPerson.name} with new number ${changedPerson.number}`)
             })
             .catch(error => {
               alert(`the person '${id}' was already deleted from server`)
               handlePersonsUpdate()
             })
+        })
+        .catch(error => {
+          setIsDestructive(true)
+          setNotificationMessage(`Information of ${id} has already been removed from server`)
+          handlePersonsUpdate()
         })
       clearForm()
     }
@@ -113,15 +137,28 @@ const App = () => {
       })
   }
 
+  const Persons = ({ personsToShow }) => {
+    return (
+      <>
+        {personsToShow.map(person =>
+          <Person
+            key={person.id} person={person}
+            handleDeletePerson={() => handleDeletePerson(person)}
+          />
+        )}
+      </>
+    )
+  }
+
   return (
     <div>
-      <Notification message={notificationMessage} />
+      <Notification message={notificationMessage} isDestructive={isDestructive}  />
       <h2>Phonebook</h2>
       <Filter newSearch={newSearch} handleSearchChange={handleSearchChange} />
       <h2>Add a new</h2>
       <PersonForm addPerson={addPerson} newName={newName} handlePersonChange={handlePersonChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} handlePersonsUpdate={handlePersonsUpdate} />
+      <Persons personsToShow={personsToShow} />
     </div>
   )
 }

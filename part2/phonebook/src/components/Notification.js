@@ -1,6 +1,6 @@
-const Notification = ({ message }) => {
+const Notification = ({ message, isDestructive = false }) => {
     const notificationStyle = {
-        color: "green",
+        color: isDestructive ? "red" : "green",
         fontStyle: "italic",
         fontSize: 16,
         borderStyle: "solid",
