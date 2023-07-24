@@ -22,8 +22,10 @@ function App() {
     setFilteredCountries(filtered)
   }, [newSearch, countries])
 
-
-
+  const handleShowCountry = (country) => {
+    setFilteredCountries([country])
+    setNewSearch(country.name.common)
+  }
 
   return (
     <div>
@@ -56,6 +58,7 @@ function App() {
                 filteredCountries.map((country) => (
                   <div key={uuidv4()}>
                     {country.name.common}
+                    <button onClick={() => handleShowCountry(country)}>show</button>
                   </div>
                 ))
         }
