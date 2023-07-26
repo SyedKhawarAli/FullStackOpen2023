@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+import Country from './components/Country'
 
 function App() {
   const [countries, setCountries] = useState([])
@@ -66,28 +67,5 @@ function App() {
     </div>
   );
 }
-
-const Country = ({ country }) => {
-  return (
-    <div>
-      <div key={uuidv4()}>
-        <h1>{country.name.common}</h1>
-        <div>capital {country.capital[0]}</div>
-        <div>population {country.population}</div>
-        <h2>languages</h2>
-        <ul>
-          {Object.values(country.languages).map((language) => (
-            <li key={uuidv4()}>
-              {language}
-            </li>
-          ))}
-        </ul>
-        <img src={country.flags.png} alt="flag" width="200" height="100" />
-      </div>
-    </div>
-  )
-}
-
-
 
 export default App;
