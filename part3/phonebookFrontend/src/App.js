@@ -57,6 +57,10 @@ const App = () => {
         setIsDestructive(false)
         setNotificationMessage(`Added ${person.name}`)
       })
+      .catch(error => {
+        setIsDestructive(true)
+        setNotificationMessage(error.response.data.error)
+      })
     clearForm()
   }
 
